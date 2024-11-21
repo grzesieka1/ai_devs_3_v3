@@ -1,0 +1,25 @@
+Zadanie: Z przechwyconych materiałów interesuje nas tylko jedna z publikacji profesora Maja. Nasza centrala chce pozyskać odpowiedzi na dostarczone przez nią pytania. Zwróć proszę uwagę, że podlinkowana notatka zawiera treści tekstowe, graficzne i dźwiękowe. Istnieje ogromne prawdopodobieństwo, że konieczne będzie wzięcie pod uwagę informacji podanych w każdym formacie. Zadanie, do którego raportujesz odpowiedź nazywa się “arxiv”.
+
+Link do artykułu: https://centrala.ag3nts.org/dane/arxiv-draft.html
+
+Pytania centrali: https://centrala.ag3nts.org/data/KLUCZ-API/arxiv.txt
+
+Oczekiwany format odpowiedzi:
+
+{
+    "ID-pytania-01": "krótka odpowiedź w 1 zdaniu",
+    "ID-pytania-02": "krótka odpowiedź w 1 zdaniu",
+    "ID-pytania-03": "krótka odpowiedź w 1 zdaniu",
+    "ID-pytania-NN": "krótka odpowiedź w 1 zdaniu"
+}
+
+
+Co należy zrobić w zadaniu?
+
+Zaindeksuj (w wybrany przez siebie sposób) cały dokument od profesora Andrzeja Maja. Pisząc CAŁY, mamy na myśli teksty, grafiki, dźwięki.
+
+Warto pamiętać o kontekstowości materiałów. Dźwięki i obrazy występują w konkretnym kontekście, który może zmieniać ich odbiór.
+
+Korzystając z prostego RAG-a opartego na modelu LLM, który uznasz za odpowiedni do tego zadania, odpowiedz na pytania centrali
+
+Gdy odpowiedzi na wszystkie pytania centrali będą poprawne, otrzymasz flagę.

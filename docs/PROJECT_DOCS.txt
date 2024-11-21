@@ -1,0 +1,283 @@
+*** pamiętaj aby zawasze aktualizować @PROJECT_DOCS.txt  ***
+
+
+DOKUMENTACJA PROJEKTU S02E05
+===========================
+
+CEL I WYKORZYSTANIE DOKUMENTU
+----------------------------
+Ten dokument służy jako:
+1. CENTRALNE ŹRÓDŁO WIEDZY o projekcie - wszystkie decyzje, komponenty i postępy są tu zapisywane
+2. DOKUMENTACJA TECHNICZNA - zawiera szczegóły implementacyjne i wymagania
+3. PLAN DZIAŁANIA - pokazuje co zostało zrobione i co jest do zrobienia
+4. PRZEWODNIK DEBUGOWANIA - w razie problemów pomoże zlokalizować źródło błędu
+
+Będę aktywnie wykorzystywał ten dokument do:
+- Śledzenia postępu implementacji
+- Zapisywania ważnych decyzji projektowych
+- Dokumentowania API i interfejsów między komponentami
+- Aktualizowania statusu zadań
+- Zapisywania napotkanych problemów i ich rozwiązań
+
+1. OPIS ZADANIA
+--------------
+1.1 Cel
+    - Pobranie i analiza publikacji prof. Maja
+    - Przetworzenie różnych typów mediów (tekst, obraz, audio)
+    - Wygenerowanie odpowiedzi na pytania centrali
+
+1.2 Wymagania
+    - Analiza całego dokumentu (tekst, grafiki, dźwięki)
+    - Uwzględnienie kontekstu materiałów
+    - Wykorzystanie RAG z modelami OpenAI
+    - Odpowiedzi w formacie JSON
+
+2. STRUKTURA PROJEKTU
+--------------------
+project/
+├── agents/
+│   └── base_agent.py     # Bazowa klasa dla wszystkich agentów
+├── docs/
+│   └── PROJECT_DOCS.txt  # Ten plik
+├── tasks/
+│   └── taskS02E05.py     # ✅ Pełna implementacja zadania
+├── main_agents.py        # Główny plik uruchomieniowy
+└── .env                  # Konfiguracja modeli
+
+3. ŚRODOWISKO I KONFIGURACJA
+---------------------------
+3.1 Modele OpenAI
+    EMBEDDING_MODEL=text-embedding-3-large  # Embedingi dokumentów
+    LLM_MODEL=gpt-4o                       # Analiza tekstu i generowanie odpowiedzi
+    VISION_MODEL=gpt-4o                    # Analiza obrazów
+    AUDIO_MODEL=whisper-1                  # Transkrypcja audio
+
+3.2 Zależności
+    requests         # HTTP requests
+    beautifulsoup4   # Parsowanie HTML
+    openai           # API OpenAI
+    python-dotenv    # Zmienne środowiskowe
+    numpy            # Operacje na wektorach
+    faiss-cpu        # Baza wektorowa
+
+4. ARCHITEKTURA SYSTEMU
+----------------------
+4.1 Komponenty
+
+    BaseAgent ✅
+    - Status: Zaimplementowany
+    - Funkcjonalności:
+      * _create_embeddings() - tworzenie embedingów dla wszystkich agentów
+      * handle_error() - ujednolicona obsługa błędów
+      * log_info() - spójne logowanie
+      * process() - abstrakcyjna metoda do implementacji
+    - Konfiguracja:
+      * Automatyczne ładowanie zmiennych środowiskowych
+      * Konfiguracja OpenAI API
+      * System logowania z formatowaniem
+
+    CollectorAgent ✅
+    - Status: Zaimplementowany
+    - Funkcjonalności:
+      * download_article() - pobieranie artykułu z API
+      * download_questions() - pobieranie pytań
+      * save_raw_data() - zapisywanie surowych danych
+      * _check_existing_data() - sprawdzanie czy dane już istnieją
+      * _load_existing_data() - wczytywanie istniejących danych
+    - Cache:
+      * Automatyczne wykrywanie istniejących danych
+      * Możliwość wyboru między użyciem cache a pobraniem nowych danych
+      * Przechowywanie w data/downloads/
+
+    ProcessorAgent ✅
+    - Status: Zaimplementowany
+    - Funkcjonalności:
+      * _process_text() - podział tekstu na fragmenty (max 1000 znaków)
+      * _process_images() - analiza obrazów przez VISION_MODEL
+      * _process_audio() - transkrypcja audio przez AUDIO_MODEL
+      * _check_existing_processed_data() - sprawdzanie przetworzonych danych
+      * _load_processed_data() - wczytywanie istniejących przetworzonych danych
+    - Cache:
+      * Automatyczne wykrywanie przetworzonych danych
+      * Możliwość wyboru między użyciem cache a ponownym przetwarzaniem
+      * Przechowywanie w data/processed/
+    - Struktura danych:
+      * processed_data.json - zawartość tekstowa
+        - text: {chunks: [...]}
+        - images: {descriptions: [...]}
+        - audio: {transcripts: [...]}
+      * embeddings.json - wektory embeddingów
+        - text_embeddings: [...]
+        - image_embeddings: [...]
+        - audio_embeddings: [...]
+
+    ResponderAgent ✅
+    - Status: Zaimplementowany
+    - Funkcjonalności:
+      * _load_knowledge_base() - wczytywanie bazy wiedzy
+      * _generate_answer() - generowanie odpowiedzi
+      * _find_relevant_chunks() - wyszukiwanie kontekstu
+      * _save_answers() - zapisywanie odpowiedzi
+    - Struktura knowledge_base:
+      * text: {chunks: [...], embeddings: [...]}
+      * images: {descriptions: [...], embeddings: [...]}
+      * audio: {transcripts: [...], embeddings: [...]}
+
+4.2 Przepływ Danych
+    Collector -> Processor -> Responder -> JSON
+
+5. API I ENDPOINTY
+-----------------
+5.1 Zewnętrzne API
+    - Artykuł: GET /articles/{article_id}
+      * Zwraca pełną treść artykułu z metadanymi
+      * Obsługuje tekst, HTML, obrazy i audio
+      * Format: application/json
+
+    - Pytania: GET /questions/{article_id}
+      * Zwraca listę pytań do artykułu
+      * Format: application/json
+      * Struktura ID: "ID-pytania-XX"
+
+    - Odpowiedzi: POST /answers/{article_id}
+      * Przyjmuje wygenerowane odpowiedzi
+      * Format: application/json
+      * Walidacja zgodności z pytaniami
+
+5.2 Interfejsy Komponentów
+
+    BaseAgent:
+    - process(data: Any) -> Dict
+      * Abstrakcyjna metoda do implementacji
+      * Zwraca przetworzone dane
+    - handle_error(error: Exception, context: str)
+      * Obsługa i logowanie błędów
+    - log_info(message: str)
+      * Logowanie informacji
+
+    CollectorAgent:
+    - download_article() -> Dict
+      * Pobiera i parsuje artykuł
+      * Zwraca słownik z zawartością
+    - download_questions() -> List[str]
+      * Pobiera i formatuje pytania
+    - save_raw_data(data: Dict)
+      * Zapisuje pobrane dane
+
+    ProcessorAgent:
+    - process() -> Dict
+      * Przetwarza wszystkie typy danych
+      * Tworzy embeddingi
+      * Zwraca przetworzone dane
+    - _process_text() -> Tuple[List[str], List[float]]
+      * Dzieli tekst na fragmenty
+      * Tworzy embeddingi tekstu
+    - _process_images() -> Tuple[List[str], List[float]]
+      * Analizuje obrazy
+      * Tworzy embeddingi obrazów
+    - _process_audio() -> Tuple[List[str], List[float]]
+      * Transkrybuje audio
+      * Tworzy embeddingi audio
+
+    ResponderAgent:
+    - process() -> Dict[str, str]
+      * Generuje odpowiedzi na pytania
+      * Zwraca słownik {id_pytania: odpowiedź}
+    - _find_relevant_chunks() -> List[str]
+      * Wyszukuje kontekst dla pytania
+    - _generate_answer() -> str
+      * Generuje odpowiedź na podstawie kontekstu
+
+5.3 Format Danych
+    {
+        "ID-pytania-01": "krótka odpowiedź w 1 zdaniu",
+        "ID-pytania-02": "krótka odpowiedź w 1 zdaniu",
+        "ID-pytania-03": "krótka odpowiedź w 1 zdaniu",
+        "ID-pytania-NN": "krótka odpowiedź w 1 zdaniu"
+    }
+
+6. STATUS I POSTĘP
+-----------------
+6.1 Zrobione ✅
+    [x] Struktura projektu
+    [x] BaseAgent
+    [x] CollectorAgent
+    [x] ProcessorAgent
+    [x] ResponderAgent
+    [x] Testy jednostkowe
+    [x] Testy integracyjne
+    [x] Dokumentacja API i interfejsów
+    [x] Implementacja głównego taska
+      * Pełny pipeline przetwarzania
+      * Obsługa błędów
+      * Logowanie postępu
+      * Zapisywanie wyników
+    [x] System cache dla pobranych danych
+    [x] System cache dla przetworzonych danych
+    [x] Interaktywny wybór użycia cache
+
+6.2 Do zrobienia 🔄
+    [ ] Optymalizacja wykorzystania pamięci przy dużych plikach
+    [ ] System czyszczenia starych danych cache
+
+7. PROBLEMY I ROZWIĄZANIA
+------------------------
+7.1 Architektura
+    - Wprowadzono wspólną klasę bazową
+    - Ujednolicono obsługę błędów i logowanie
+    - Zoptymalizowano zarządzanie zasobami AI
+    - Wprowadzono modułową strukturę agentów
+    - Rozdzielono przechowywanie danych tekstowych i embeddingów
+    - Zapewniono spójną strukturę danych między agentami
+
+7.2 Przetwarzanie Danych
+    - Inteligentny podział tekstu na fragmenty
+    - Efektywne wyszukiwanie kontekstu
+    - Łączenie różnych typów mediów
+    - Optymalizacja wykorzystania modeli AI
+    - Osobne przechowywanie embeddingów dla lepszej wydajności
+
+7.3 Testy i Debugowanie
+    - Naprawiono problemy z testami integracyjnymi:
+      * Dodano prawidłowe mockowanie OpenAI API
+      * Wprowadzono różne wartości embeddings dla różnych typów danych
+      * Dodano testy różnych scenariuszy błędów
+      * Rozszerzono testy spójności danych
+    - Wprowadzono lepsze mockowanie zewnętrznych zależności:
+      * Użycie MagicMock dla kompleksowych obiektów
+      * Dynamiczne generowanie odpowiedzi testowych
+      * Symulacja różnych scenariuszy API
+    - Dodano testowe przypadki brzegowe:
+      * Puste dane wejściowe
+      * Błędy sieci
+      * Limity API
+      * Nieprawidłowe formaty danych
+
+7.3 Dokładność odpowiedzi
+    - Problem: Niektóre odpowiedzi są nieprecyzyjne lub pomijają kluczowe szczegóły
+    - Rozwiązanie:
+      * Zwiększenie wagi dla źródeł audio i obrazów w wyszukiwaniu kontekstu
+      * Dodanie walidacji odpowiedzi względem znalezionych fragmentów
+      * Wymaganie cytowania źródła informacji w kontekście
+      * Priorytetyzacja dokładnych dopasowań nad podobieństwem semantycznym
+
+7.4 Wyszukiwanie kontekstu
+    - Obecny problem:
+      * Niektóre fragmenty z wysokim podobieństwem nie zawierają odpowiedzi
+      * Ważne informacje mogą być w fragmentach o niższym podobieństwie
+    - Planowane usprawnienia:
+      * Dwuetapowe wyszukiwanie: najpierw szersze, potem precyzyjne
+      * Osobne wagi dla różnych typów źródeł (tekst/audio/obrazy)
+      * Filtrowanie fragmentów niezawierających kluczowych słów
+
+8. NOTATKI ROZWOJOWE
+-------------------
+- System jest gotowy do testów wydajnościowych
+- Następne kroki:
+  1. Optymalizacja wykorzystania zasobów
+  2. Testy wydajnościowe
+  3. Testy obciążeniowe
+  4. Testy bezpieczeństwa
+
+---
+Ostatnia aktualizacja: [2024-03-19] 

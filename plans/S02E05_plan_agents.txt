@@ -1,0 +1,99 @@
+pamiętaj aby zawasze aktualizować @PROJECT_DOCS.txt 
+
+
+Plan wykonania zadania S02E05 z wykorzystaniem agentów
+
+1. STRUKTURA AGENTÓW
+
+BaseAgent (klasa bazowa):
+- Podstawowe funkcje wspólne dla wszystkich agentów
+- System komunikacji między agentami
+- Obsługa błędów
+
+CollectorAgent:
+- Pobieranie artykułu HTML
+- Pobieranie pytań
+- Zapisywanie danych do data/content/
+- Umiejętności:
+  * download_article()
+  * download_questions()
+  * save_raw_data()
+
+ProcessorAgent:
+- Przetwarzanie wszystkich typów mediów
+- Tworzenie bazy wiedzy
+- Umiejętności:
+  * process_text()
+  * process_images()
+  * process_audio()
+  * create_embeddings()
+  * save_to_chromadb()
+
+ResponderAgent:
+- Generowanie odpowiedzi na pytania
+- Formatowanie JSON
+- Umiejętności:
+  * search_knowledge_base()
+  * generate_answer()
+  * format_json_response()
+
+2. PRZEPŁYW DANYCH
+
+CollectorAgent -> ProcessorAgent -> ResponderAgent
+
+3. IMPLEMENTACJA W taskS02E05.py
+
+a) Definicja klas agentów
+b) Funkcja initialize_agents():
+   - Tworzy instancje agentów
+   - Konfiguruje połączenia między nimi
+   
+c) Funkcja solve_task():
+   - Uruchamia sekwencję agentów
+   - Obsługuje błędy
+   - Zwraca wynik w formacie JSON
+
+4. STRUKTURA KATALOGÓW
+
+projekt/
+├── agents/
+│   ├── base_agent.py
+│   ├── collector_agent.py
+│   ├── processor_agent.py
+│   └── responder_agent.py
+├── data/
+│   ├── content/
+│   └── embeddings/
+├── tasks/
+│   └── taskS02E05.py
+└── main_agents.py
+
+5. KOLEJNOŚĆ IMPLEMENTACJI
+
+1. Implementacja BaseAgent
+2. Implementacja CollectorAgent i test pobierania danych
+3. Implementacja ProcessorAgent i test przetwarzania
+4. Implementacja ResponderAgent i test odpowiedzi
+5. Integracja w taskS02E05.py
+
+6. WYMAGANE BIBLIOTEKI
+
+- langchain
+- chromadb
+- pytesseract
+- transformers
+- requests
+- beautifulsoup4
+- whisper
+
+7. OBSŁUGA BŁĘDÓW
+
+- Każdy agent powinien mieć własną obsługę błędów
+- Logi błędów zapisywane do pliku
+- Możliwość ponownego uruchomienia od miejsca błędu
+
+8. TESTOWANIE
+
+- Testy jednostkowe dla każdego agenta
+- Test integracyjny całego systemu
+- Walidacja formatu odpowiedzi 

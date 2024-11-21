@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: System Analizy Publikacji
+  description: API do analizy publikacji naukowych i generowania odpowiedzi
+  version: 1.0.0
+
+servers:
+  - url: https://centrala.ag3nts.org/api/v1
+    description: Serwer produkcyjny
+  - url: http://localhost:8000/api/v1
+    description: Serwer lokalny
+
+paths:
+  /articles/{article_id}:
+    get:
+      summary: Pobiera artykuł do analizy
+      parameters:
+        - name: article_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pomyślnie pobrano artykuł
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        '404':
+          description: Nie znaleziono artykułu
+
+  /questions/{article_id}:
+    get:
+      summary: Pobiera pytania do artykułu
+      parameters:
+        - name: article_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pomyślnie pobrano pytania
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Questions'
+
+  /answers/{article_id}:
+    post:
+      summary: Zapisuje odpowiedzi na pytania
+      parameters:
+        - name: article_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Answers'
+      responses:
+        '201':
+          description: Pomyślnie zapisano odpowiedzi
+
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        html_content:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        audio:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    Questions:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            pattern: '^ID-pytania-[0-9]{2}$'
+          text:
+            type: string
+
+    Answers:
+      type: object
+      additionalProperties:
+        type: string
+      example:
+        "ID-pytania-01": "Krótka odpowiedź na pierwsze pytanie"
+        "ID-pytania-02": "Krótka odpowiedź na drugie pytanie" 

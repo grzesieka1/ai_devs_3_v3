@@ -1,0 +1,19 @@
+Zebraliśmy zeznania od naszych wysłanników, którzy obserwowali fabrykę. Opisali oni, jak wyglądały roboty, które się tam kręciły. Na podstawie ich opisów przygotuj proszę grafikę, która będzie pewnego rodzaju wizualizacją potencjalnego wyglądu tych robotów, a następnie prześlij nam linka do tej grafiki. Użyj w tym celu modelu Dall-E w wersji 3. Grafika, której oczekujemy powinna być w formacie PNG o wymiarach 1024x1024px. Zadanie w raportach nazywa się ’robotid’.
+
+Opis robota (zmienia się co 10 minut):
+
+https://centrala.ag3nts.org/data/KLUCZ-API/robotid.json
+
+Co należy zrobić w zadaniu?
+
+Pobierz jedno z zeznań wysłanników
+
+Stwórz obraz na podstawie opisu (wykorzystaj sugerowany model DALL-E lub dowolny inny, który będzie dla Ciebie dogodny)
+
+Odeślij URL wygenerowanej grafiki do centrali
+
+Grafika musi być w formacie PNG i mieć wymiary 1024×1024 px
+
+Jeśli obraz zostanie zaakceptowany, otrzymasz flagę
+
+UWAGA: nie musisz samodzielnie hostować pliku PNG. Możesz podać adres URL otrzymany od generatora.

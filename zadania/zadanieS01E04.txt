@@ -1,0 +1,57 @@
+Dzięki Twojej pomocy w obejściu licznych systemów bezpieczeństwa udało nam się zdobyć dostęp do jednej z fabryk kontrolowanych przez roboty. Mało tego! Mamy także dostęp do robota przemysłowego, którego da się zaprogramować tak, aby wykonał Twoje instrukcje.
+    
+Przeprogramuj robota w taki sposób, aby dotarł on do celu, jakim jest komputer z danymi fabryki.
+
+Istnieją minimum dwa sposoby na osiągnięcie tego celu - możesz zaprogramować samobieżnego, autonomicznego robota, który będzie przemieszczał się po fabryce (wersja ambitna), ale możesz także poinstruować robota, jak należy poruszać się pomiędzy półkami. Nie ma znaczenia, której metody użyjesz.
+
+Link do panelu sterowania robotem:
+
+https://banan.ag3nts.org/ 
+
+Co trzeba zrobić w zadaniu?
+
+Wchodzisz do panelu sterowania robotem w firmie BanAN
+
+Twoim celem jest doprowadzenie robota przemysłowego do komputera z danymi.
+
+Czytasz instrukcję obsługi robota, z której dowiadujesz się, że robot potrafi wykonywać tylko cztery polecenia: LEFT / RIGHT / UP / DOWN
+
+Musisz napisać prompta, który zwraca strukturę JSON z krokami do wykonania. Kroki te będą zawarte w polu o nazwie “steps”. Wszystkie pozostałe pola w JSON-ie zostaną pominięte.
+
+Twój prompt będzie interpretowany przez model GPT-4o-mini (nie jest on tak sprytny, jak się początkowo wydaje. Trzeba uprościć polecenia!)
+
+Czasami warto wrzucić wnioskowanie robota to dodatkowego pola w JSON, ale PRZED ostateczną odpowiedzią. Podniesie to skuteczność wnioskowania oraz pozwoli Ci lepiej zrozumieć jak myśli LLM + pozwoli na poprawienie błędów
+
+Zadanie można rozwiązać na dwa sposoby
+
+poinstruuj robota, jak ma iść. Po prostu powiedz mu to, ale w sprytny sposób
+
+(hard!) naucz go poruszać się po labiryncie. Pamiętaj tylko, że robot nie widzi ścian. Trzeba więc opowiedzieć mu w zrozumiały dla LLM-a sposób, jak wygląda pomieszczenie, gdzie się on znajduje, gdzie ma dojść itp.
+
+Wersja HARD może zająć Ci nawet 1-2h, ale da niebywałą satysfakcję 😏
+
+P.S. W razie problemów wpisz HELP w instrukcjach programu
+
+----
+
+Plan implementacji zadania S01E04:
+Krok 1: Podstawowa struktura i test połączenia
+*Utworzenie podstawowej klasy RobotNavigator
+*Dodanie prostej metody do testowania połączenia z API (https://banan.ag3nts.org/)
+*Test czy możemy się połączyć z endpointem
+Krok 2: Implementacja prostego promptu
+*Dodanie klasy CommunicationAgent do obsługi komunikacji z GPT
+*Napisanie podstawowego promptu, który zwróci prosty JSON ze steps
+*Test czy otrzymujemy prawidłową strukturę JSON
+Krok 3: Implementacja nawigacji
+*Dodanie logiki do wykonywania kroków (LEFT, RIGHT, UP, DOWN)
+*Test czy robot reaguje na pojedyncze komendy
+*Implementacja prostej sekwencji kroków
+Krok 4: Obsługa błędów i walidacja
+*Dodanie walidacji odpowiedzi od GPT
+*Implementacja obsługi błędów
+*Dodanie mechanizmu retry
+Krok 5: Optymalizacja i rozszerzenia
+*Dodanie logowania kroków
+*Implementacja bardziej zaawansowanej strategii nawigacji
+*Dodanie mechanizmu przerywania w przypadku zbyt wielu kroków

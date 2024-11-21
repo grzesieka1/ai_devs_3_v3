@@ -1,0 +1,66 @@
+Plan wykonania zadania S02E05 - Analiza publikacji profesora Maja
+
+1. PRZYGOTOWANIE ŚRODOWISKA
+   - Instalacja wszystkich wymaganych zależności z requirements.txt
+   - Konfiguracja kluczy API dla modeli LLM
+   - Przygotowanie środowiska dla OCR i przetwarzania audio
+
+2. POBRANIE I INDEKSACJA ZAWARTOŚCI
+   a) Sprawdzenie dostępności zapisanych danych:
+      - Sprawdź czy istnieją zapisane dane w data/content/arxiv_content.pkl
+      - Sprawdź czy istnieją zapisane embeddingi w data/embeddings/arxiv_embeddings.pkl
+      - Jeśli dane istnieją, wczytaj je i przejdź do punktu 4
+   
+   b) Jeśli brak zapisanych danych:
+      - Pobranie artykułu z https://centrala.ag3nts.org/dane/arxiv-draft.html
+      - Zapisanie surowych danych do data/content/arxiv_content.pkl
+   
+   c) Jeśli brak zapisanych embeddingów:
+      - Ekstrakcja i przetwarzanie tekstu:
+         * Pobranie tekstu ze strony HTML
+         * Podział na mniejsze chunki (1000 tokenów z 200 tokenów nakładki)
+      - Przetwarzanie obrazów:
+         * Identyfikacja wszystkich obrazów w artykule
+         * OCR dla tekstu na obrazach
+         * Analiza zawartości obrazów przez model wizyjny
+      - Przetwarzanie audio:
+         * Pobranie plików audio
+         * Transkrypcja audio na tekst
+         * Analiza kontekstu występowania plików audio
+      - Zapisanie embeddingów do data/embeddings/arxiv_embeddings.pkl
+
+3. UTWORZENIE BAZY WIEDZY
+   - Utworzenie embeddings dla wszystkich typów zawartości
+   - Zapisanie w ChromaDB z zachowaniem metadanych o źródle
+   - Zachowanie informacji o kontekście dla każdego fragmentu
+
+4. PRZETWARZANIE PYTAŃ
+   a) Pobranie pytań z https://centrala.ag3nts.org/data/KLUCZ-API/arxiv.txt
+   b) Dla każdego pytania:
+      - Wyszukanie najbardziej relewantnych fragmentów w bazie wiedzy
+      - Przygotowanie kontekstu łączącego różne typy mediów
+      - Wygenerowanie zwięzłej odpowiedzi (1 zdanie)
+      - Walidacja formatu odpowiedzi
+
+5. FORMATOWANIE I WYSYŁANIE ODPOWIEDZI
+   - Przygotowanie odpowiedzi w formacie JSON:
+     {
+         "ID-pytania-01": "odpowiedź",
+         "ID-pytania-02": "odpowiedź",
+         ...
+     }
+   - Walidacja poprawności formatu JSON
+   - Wysłanie odpowiedzi do systemu
+
+6. WERYFIKACJA
+   - Sprawdzenie czy otrzymano flagę
+   - W przypadku braku flagi:
+     * Analiza błędów
+     * Dostosowanie odpowiedzi
+     * Ponowne wysłanie
+
+UWAGI:
+- Zachować szczególną uwagę na kontekst między różnymi typami mediów
+- Upewnić się, że odpowiedzi są zwięzłe (1 zdanie)
+- Monitorować logi w przypadku błędów
+- Zachować kopie zapasowe indeksu i odpowiedzi 

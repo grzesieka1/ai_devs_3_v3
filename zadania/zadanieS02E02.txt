@@ -1,0 +1,16 @@
+Na podstawie dostarczonych w teczce fragmentów mapy, korzystając także z podpowiedzi z treści filmu powyżej, określ, z jakiego miasta one pochodzą. Pamiętaj, że jeden z fragmentów mapy może być błędny i może pochodzić z innego miasta. Użyj do tego celu modelu zdolnego do rozpoznawania obrazu. Wyślij nam do centrali nazwę tej miejscowości jako flagę.
+
+Co należy zrobić w zadaniu?
+
+Na podstawie mapy z teczki (papierowej lub elektronicznej) przygotuj cztery grafiki z czterema elementami mapy. Wykonanie fotek a pomocą smartfona pozwoli Ci zrozumieć, jak dokładny bywa model przy pracy z tego rodzaju skanami dokumentów przy różnych warunkach oświetlenia.
+
+Użyj dowolnego modułu typu Vision, do rozpoznania co jest na obrazach (możesz użyć GPT-4o, który potrafi świetnie poradzić sobie z inputem graficznym)
+
+W ramach dodatkowego prompta określ, co jest zadaniem, jakie informacje posiadasz i czego oczekujesz od modelu.
+
+Otrzymaną nazwę miasta zgłoś do centrali jako flagę (przez UI. W tym zadaniu nie używamy API)
+
+UWAGA: wielu agentów rozpoznało jakie to miasto za pomocą technik OSINT-owych. To świetne podejście, ale nie na szkoleniu z LLM. Zachęcamy do zapoznania się z tym, jak wygląda praca z modelami do rozpoznawania obrazów.
+
+----
+mapy dostępne są w folderze data_and_instructions: mapa1.png, mapa2.png, mapa3.png, mapa4.png, 
